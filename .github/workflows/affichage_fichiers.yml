@@ -1,14 +1,15 @@
 name: Liste des fichiers au Push
 
-# Déclencheur : s'exécute à chaque push sur n'importe quelle branche
 on: [push]
 
 jobs:
   check-files:
-    runs-on: ubuntu-latest # On utilise un serveur Linux
+    runs-on: ubuntu-latest
     steps:
-      - name: Récupérer le code du dépôt
-        uses: actions/checkout@v4 # Étape obligatoire pour que l'action voit tes fichiers
+      # C'est cette étape qui "télécharge" ton code sur le serveur GitHub
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
 
+      # Maintenant que le code est là, on peut le lister
       - name: Afficher la liste des fichiers
-        run: ls -R # Le -R permet de voir aussi le contenu des sous-dossiers (comme src/)
+        run: ls -R
