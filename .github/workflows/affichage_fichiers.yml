@@ -1,29 +1,22 @@
-name: CI Mes Dates
+name: Check Tree on PR
 
+# Déclencheur : Uniquement lors d'une Pull Request vers main ou master
 on:
-  push:
-    branches:
-      - '**'
   pull_request:
-    branches:
-      - 'master'
+    branches: [ main, master ]
 
 jobs:
-  build-and-lint:
+  verify-structure:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Liste des fichiers
-        run: ls -R
-
-      - name: Mise en place du code (Checkout)
+      - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: Liste des fichiers après checkout
-        run: ls -R
-      
-      - name: Installation de PHPCS
-        run: composer global require "squizlabs/php_codesniffer=*"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
 
-      - name: PHP Code Sniffer (Lint)
-        run: ~/.composer/vendor/bin/phpcs --standard=PSR12 src/
+      - name: Exécuter la vérification d'arborescence
+        run: php check_tree.php
