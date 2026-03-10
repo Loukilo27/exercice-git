@@ -1,7 +1,6 @@
 <?php
-/**
- * Vérification de l'arborescence requise
- */
+// On définit la racine du projet (deux niveaux au-dessus de .github/scripts/)
+$root = dirname(__DIR__, 2); 
 
 $requiredPaths = [
     'site',
@@ -12,11 +11,11 @@ $requiredPaths = [
 ];
 
 $errors = 0;
-
-echo "Analyse de l'arborescence..." . PHP_EOL;
+echo "Analyse depuis la racine : $root" . PHP_EOL;
 
 foreach ($requiredPaths as $path) {
-    if (is_dir(__DIR__ . '/' . $path)) {
+    // On concatène la racine avec le chemin relatif
+    if (is_dir($root . '/' . $path)) {
         echo "✅ " . $path . PHP_EOL;
     } else {
         echo "❌ " . $path . " (MANQUANT)" . PHP_EOL;
@@ -24,10 +23,4 @@ foreach ($requiredPaths as $path) {
     }
 }
 
-if ($errors > 0) {
-    echo PHP_EOL . "Résultat : Arborescence non conforme !" . PHP_EOL;
-    exit(1); // Indique un échec à GitHub Actions
-}
-
-echo PHP_EOL . "Résultat : Arborescence parfaite." . PHP_EOL;
-exit(0); // Indique un succès
+exit($errors > 0 ? 1 : 0);
