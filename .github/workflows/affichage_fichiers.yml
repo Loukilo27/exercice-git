@@ -6,6 +6,10 @@ jobs:
   check-files:
     runs-on: ubuntu-latest
     steps:
+      # C'est cette étape qui "télécharge" ton code sur le serveur GitHub
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
       # Maintenant que le code est là, on peut le lister
       - name: Afficher la liste des fichiers
         run: ls -R
