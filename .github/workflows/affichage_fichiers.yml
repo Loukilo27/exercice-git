@@ -1,0 +1,29 @@
+name: CI Mes Dates
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - 'master'
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Liste des fichiers
+        run: ls -R
+
+      - name: Mise en place du code (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Liste des fichiers après checkout
+        run: ls -R
+      
+      - name: Installation de PHPCS
+        run: composer global require "squizlabs/php_codesniffer=*"
+
+      - name: PHP Code Sniffer (Lint)
+        run: ~/.composer/vendor/bin/phpcs --standard=PSR12 src/
