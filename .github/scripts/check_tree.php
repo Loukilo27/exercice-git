@@ -1,64 +1,66 @@
 <?php
 
-// On remonte de deux niveaux pour atteindre la racine depuis .github/scripts/
+// Calcul de la racine : on remonte de .github/scripts/ vers la racine du projet
 $root = realpath(__DIR__ . '/../../');
 
-// Configuration des dossiers et des extensions autorisées
-$constraints = [
+// Configuration : Dossier => Extensions autorisées
+$config = [
     'site'     => ['html', 'php'],
     'site/img' => ['png', 'jpg', 'jpeg'],
     'site/css' => ['css'],
     'site/js'  => ['js'],
-    'src'      => ['php'] // Optionnel, mais recommandé pour src
+    'src'      => ['php']
 ];
 
-$errors = 0;
+$totalErrors = 0;
 
-echo "--- Début de la vérification avancée ---" . PHP_EOL;
-echo "Racine du projet : $root" . PHP_EOL . PHP_EOL;
+echo "=== VÉRIFICATION GLOBALE (STRUCTURE & CONTENU) ===" . PHP_EOL;
+echo "📍 Racine : $root" . PHP_EOL . PHP_EOL;
 
-foreach ($constraints as $folder => $allowedExtensions) {
+foreach ($config as $folder => $allowedExtensions) {
     $fullPath = $root . '/' . $folder;
 
-    // 1. Vérification de l'existence du dossier
+    // --- ÉTAPE 1 : VÉRIFICATION DE L'ARBORESCENCE ---
     if (!is_dir($fullPath)) {
-        echo "❌ Dossier MANQUANT : $folder" . PHP_EOL;
-        $errors++;
-        continue;
+        echo "❌ STRUCTURE : Dossier /$folder MANQUANT" . PHP_EOL;
+        $totalErrors++;
+        // Si le dossier manque, on ne peut pas vérifier ses fichiers, on passe au suivant
+        continue; 
     }
 
-    echo "📂 Analyse de /$folder..." . PHP_EOL;
+    echo "✅ STRUCTURE : Dossier /$folder PRÉSENT" . PHP_EOL;
 
-    // 2. Scan du contenu du dossier
+    // --- ÉTAPE 2 : VÉRIFICATION DES EXTENSIONS ---
     $files = scandir($fullPath);
-    foreach ($files as $file) {
-        // On ignore les dossiers système et les sous-répertoires
-        if ($file === '.' || $file === '..' || is_dir($fullPath . '/' . $file)) {
-            continue;
-        }
+    $folderClean = true;
 
-        // On ignore les fichiers .gitkeep que nous avons ajoutés
-        if ($file === '.gitkeep') {
+    foreach ($files as $file) {
+        // On ignore les dossiers systèmes, les sous-dossiers et le fichier .gitkeep
+        if ($file === '.' || $file === '..' || is_dir($fullPath . '/' . $file) || $file === '.gitkeep') {
             continue;
         }
 
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-        // 3. Vérification de l'extension
         if (!in_array($extension, $allowedExtensions)) {
-            echo "   ⚠️ FICHIER NON CONFORME : '$file' n'est pas autorisé dans /$folder." . PHP_EOL;
-            echo "      (Attendu : " . implode(' ou ', $allowedExtensions) . ")" . PHP_EOL;
-            $errors++;
+            echo "   ⚠️ EXTENSION : Fichier '$file' non autorisé dans /$folder" . PHP_EOL;
+            echo "      (Attendu : " . implode(', ', $allowedExtensions) . ")" . PHP_EOL;
+            $folderClean = false;
+            $totalErrors++;
         }
+    }
+
+    if ($folderClean && count($files) > 2) { // > 2 car scandir compte toujours "." et ".."
+        echo "   ✨ Contenu conforme." . PHP_EOL;
     }
 }
 
-echo PHP_EOL . "--- Résultat ---" . PHP_EOL;
+echo PHP_EOL . "=== BILAN FINAL ===" . PHP_EOL;
 
-if ($errors > 0) {
-    echo "❌ ÉCHEC : $errors erreur(s) de structure ou de fichiers détectée(s)." . PHP_EOL;
-    exit(1); // Crucial pour bloquer la Pull Request sur GitHub
+if ($totalErrors > 0) {
+    echo "❌ ÉCHEC : $totalErrors erreur(s) détectée(s). Vérifiez les logs ci-dessus." . PHP_EOL;
+    exit(1); // Stop la Pull Request
 }
 
-echo "🚀 SUCCÈS : Tout est conforme !" . PHP_EOL;
+echo "🚀 SUCCÈS : Arborescence et fichiers 100% conformes !" . PHP_EOL;
 exit(0);
