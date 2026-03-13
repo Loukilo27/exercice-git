@@ -31,4 +31,13 @@ jobs:
         # On lance PHPUnit qui utilisera ton fichier phpunit.xml
         run: ./vendor/bin/phpunit
 
+      - name: Générer le rapport HTML
+        run: ./vendor/bin/phpunit --coverage-html rapport-html
+
+      - name: Upload du rapport en tant qu'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-couverture-code
+          path: rapport-html/
+
       
