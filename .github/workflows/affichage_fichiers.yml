@@ -1,23 +1,35 @@
-name: Validation Totale PR
+name: Verify PR (Structure & Tests)
+
 on:
   pull_request:
     branches: [ main, master ]
 
 jobs:
-  verification:
+  qa-checks:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          coverage: xdebug # Pour le rapport de couverture
+          extensions: mbstring, xml, dom # Nécessaire pour PHPUnit
+          coverage: xdebug # Optionnel : pour le rapport de couverture du cours
 
-      - name: Installer Dépendances
-        run: composer install
+      - name: Installation des dépendances (Composer)
+        # Indispensable pour avoir le dossier vendor/ et phpunit sur GitHub
+        run: composer install --no-progress --no-suggest --prefer-dist
 
-      - name: Vérifier Arborescence & Extensions
+      - name: 1. Vérification de l'arborescence et extensions
+        # On garde ton script de vérification personnalisé
         run: php .github/scripts/check_tree.php
+
+      - name: 2. Exécution des tests unitaires (PHPUnit)
+        # On lance PHPUnit qui utilisera ton fichier phpunit.xml
+        run: ./vendor/bin/phpunit
 
       - name: Lancer les Tests & Rapport de Couverture
         run: ./vendor/bin/phpunit --coverage-text
