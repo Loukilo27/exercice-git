@@ -1,12 +1,11 @@
-name: Check Tree on PR
+name: Verify PR (Structure & Tests)
 
-# Déclencheur : Uniquement lors d'une Pull Request vers main ou master
 on:
   pull_request:
     branches: [ main, master ]
 
 jobs:
-  verify-structure:
+  qa-checks:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +15,29 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4' # On passe à 8.4 pour correspondre à tes packages
+          extensions: mbstring, xml, dom
+          coverage: xdebug
 
-      - name: Exécuter la vérification d'arborescence
+      - name: Installation des dépendances (Composer)
+        # Indispensable pour avoir le dossier vendor/ et phpunit sur GitHub
+        run: composer install --no-progress --no-suggest --prefer-dist
+
+      - name: 1. Vérification de l'arborescence et extensions
+        # On garde ton script de vérification personnalisé
         run: php .github/scripts/check_tree.php
+
+      - name: 2. Exécution des tests unitaires (PHPUnit)
+        # On lance PHPUnit qui utilisera ton fichier phpunit.xml
+        run: ./vendor/bin/phpunit
+
+      - name: Générer le rapport HTML
+        run: ./vendor/bin/phpunit --coverage-html rapport-html
+
+      - name: Upload du rapport en tant qu'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapport-couverture-code
+          path: rapport-html/
+
+      
