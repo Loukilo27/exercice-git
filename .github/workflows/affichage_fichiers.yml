@@ -15,9 +15,9 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          extensions: mbstring, xml, dom # Nécessaire pour PHPUnit
-          coverage: xdebug # Optionnel : pour le rapport de couverture du cours
+          php-version: '8.4' # On passe à 8.4 pour correspondre à tes packages
+          extensions: mbstring, xml, dom
+          coverage: xdebug
 
       - name: Installation des dépendances (Composer)
         # Indispensable pour avoir le dossier vendor/ et phpunit sur GitHub
@@ -31,5 +31,4 @@ jobs:
         # On lance PHPUnit qui utilisera ton fichier phpunit.xml
         run: ./vendor/bin/phpunit
 
-      - name: Lancer les Tests & Rapport de Couverture
-        run: ./vendor/bin/phpunit --coverage-text
+      
