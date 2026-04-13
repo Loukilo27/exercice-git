@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html>
-<head><title>Résultat</title></head>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultat PHP</title>
+</head>
 <body>
-    <h1 id="displayName"></h1>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const name = params.get('name');
-        if (name) {
-            // Conversion en majuscules ici
-            document.getElementById('displayName').innerText = name.toUpperCase();
-        }
-    </script>
+    <?php
+        $nom = isset($_GET['nom']) ? $_GET['nom'] : '';
+        $nomMajuscule = mb_strtoupper($nom, 'UTF-8');
+    ?>
+    <h1 id="displayName"><?php echo htmlspecialchars($nomMajuscule); ?></h1>
+    
+    <a href="index.php">Retour</a>
 </body>
 </html>
