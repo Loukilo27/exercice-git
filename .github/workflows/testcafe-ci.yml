@@ -22,6 +22,6 @@ jobs:
         # On utilise "headless" car GitHub Actions n'a pas d'interface graphique
         # On utilise l'option --app pour lancer le serveur localement pendant le test
         run: |
-          npx testcafe "opera:headless" tests/test_use_case.js \
+          npx testcafe "chrome:headless" tests/test_use_case.js \
           --app "npx http-server -p 8080" \
           --app-init-delay 2000
