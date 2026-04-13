@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Résultat</title></head>
+<body>
+    <h1 id="displayName"></h1>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name');
+        if (name) {
+            // Conversion en majuscules ici
+            document.getElementById('displayName').innerText = name.toUpperCase();
+        }
+    </script>
+</body>
+</html>

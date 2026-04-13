@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Formulaire</title></head>
+<body>
+    <form id="nameForm">
+        <input type="text" id="nameInput" placeholder="Entrez votre nom" required>
+        <button type="submit" id="saveBtn">Enregistrer</button>
+    </form>
+    <script>
+        document.getElementById('nameForm').onsubmit = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('nameInput').value;
+            // On passe le nom en paramètre d'URL pour la 2ème page
+            window.location.href = "result.html?name=" + encodeURIComponent(name);
+        };
+    </script>
+</body>
+</html>
