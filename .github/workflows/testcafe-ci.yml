@@ -19,9 +19,7 @@ jobs:
         run: npm install
 
       - name: Run TestCafe
-        # On utilise "headless" car GitHub Actions n'a pas d'interface graphique
-        # On utilise l'option --app pour lancer le serveur localement pendant le test
         run: |
           npx testcafe "chrome:headless" tests/test_use_case.js \
-          --app "npx http-server -p 8080" \
-          --app-init-delay 2000
+          --app "php -S localhost:8080" \
+          --app-init-delay 5000
